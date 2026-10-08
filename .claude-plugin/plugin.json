@@ -1,0 +1,10 @@
+{
+  "name": "fernando-stack",
+  "version": "0.1.0",
+  "description": "La forma de escribir y refactorizar código de Fernando para todos sus proyectos: norma de estilo, guía de refactorización, estructura de carpetas y agentes revisores.",
+  "author": {
+    "name": "Fernando del Río"
+  },
+  "repository": "https://github.com/fernando-delrio/fernando-stack",
+  "keywords": ["estilo", "refactorizacion", "revision", "react", "typescript", "python"]
+}

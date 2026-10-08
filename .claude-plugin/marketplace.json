@@ -1,0 +1,15 @@
+{
+  "name": "fernando-stack",
+  "description": "Marketplace personal de Fernando del Río con su forma de escribir y refactorizar código.",
+  "owner": {
+    "name": "Fernando del Río"
+  },
+  "plugins": [
+    {
+      "name": "fernando-stack",
+      "description": "Norma de estilo, guía de refactorización, estructura de carpetas y agentes revisores de Fernando.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}
