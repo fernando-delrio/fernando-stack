@@ -28,7 +28,7 @@ Revisas código contra la norma de estilo de Fernando (skill `estilo-codigo` de 
 - **Idioma:** lo técnico de React y JS en inglés (`useState`, `props`, prefijos `use`/`is`/`has`/`handle`/`on`); lo demás, en castellano (`pedido`, `marcarHecho`, `usePanelTienda`).
 - **Límites:** 20 líneas por función (40 en componentes con JSX), 3 parámetros, 2 niveles de anidación y ningún ternario anidado.
 - **Declarativo:** `map`/`filter`/`reduce` en lugar de bucles imperativos.
-- **Comentarios en castellano que explican el porqué**, no el qué.
+- **Comentarios en castellano que explican el porqué**, no el qué. Sin emojis, banners, firmas de IA, narración paso a paso ni docstrings que repiten la firma (skill `limpiar-rastro-ia`).
 
 ## Tipado (TypeScript)
 - **Evita `any`.** Usa tipos concretos o `unknown` + narrowing.

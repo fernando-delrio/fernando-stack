@@ -10,6 +10,7 @@ Sale de la norma que se aplicó y se probó en `primer-equipo-ai` (octubre de 20
 |---|---|---|
 | **Skill `estilo-codigo`** | La norma: 17 reglas con ejemplos en TypeScript/React y Python, principios y fallos que no hay que copiar | Sola, al escribir o revisar código; o con `/fernando-stack:estilo-codigo` |
 | **Skill `refactorizar`** | Guía de refactoring.guru (smells, técnicas, lista por archivo) y el método paso a paso sin romper nada | Al pedir refactorizar o limpiar código |
+| **Skill `limpiar-rastro-ia`** | Quita comentarios de relleno, emojis, banners, firmas y docstrings vacíos sin tocar el código, con un script que los busca | Al pedir limpiar comentarios o «quitar lo que huele a IA»; antes de enseñar código a un cliente |
 | **Skill `estructura-proyecto`** | Carpetas del frontend y del backend, organización de `docs/` (plan, bitácora, índice), ramas y commits | Al empezar un proyecto o decidir dónde va algo |
 | **Agente `conventions-reviewer`** | Revisa que el código cumpla la norma | Después de escribir o cambiar código |
 | **Agente `craft-reviewer`** | Revisa la calidad general (Ousterhout, McConnell, SOLID, DRY/KISS/YAGNI…) | Para saber si algo está bien escrito |
@@ -87,6 +88,7 @@ Si el proyecto tiene su propia copia de la norma (como `primer-equipo-ai`), mand
 skills/
 ├── estilo-codigo/      SKILL.md + plantillas/
 ├── refactorizar/       SKILL.md
+├── limpiar-rastro-ia/  SKILL.md + buscar_rastro_ia.py
 └── estructura-proyecto/SKILL.md
 agents/                 los cuatro agentes revisores
 ```

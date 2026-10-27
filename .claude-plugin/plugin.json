@@ -1,7 +1,7 @@
 {
   "name": "fernando-stack",
-  "version": "0.1.0",
-  "description": "La forma de escribir y refactorizar código de Fernando para todos sus proyectos: norma de estilo, guía de refactorización, estructura de carpetas y agentes revisores.",
+  "version": "0.2.0",
+  "description": "La forma de escribir y refactorizar código de Fernando para todos sus proyectos: norma de estilo, guía de refactorización, limpieza de rastros de IA, estructura de carpetas y agentes revisores.",
   "author": {
     "name": "Fernando del Río"
   },

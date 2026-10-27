@@ -165,7 +165,7 @@ En castellano y explicando **el porqué**:
 // Aquí y no en cada servicio: hay 17 servicios con su propio fetch y así un 401
 // se trata igual en todos sin tocarlos uno a uno.
 ```
-En los archivos largos se usan cabeceras de sección: `// ── Peticiones ──`, `# ── Copia ──`.
+Sin banners ni separadores decorativos (`// ── Peticiones ──`, `# =====`): si un archivo necesita secciones, necesita partirse. Para quitar comentarios de relleno, emojis y otros rastros de IA, skill `limpiar-rastro-ia`.
 
 ### Pruebas
 
