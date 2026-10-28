@@ -3,7 +3,10 @@
 
 export type Resultado<Valor> = { valor: Valor; error: null } | { valor: null; error: Error }
 
-const comoError = (fallo: unknown) => (fallo instanceof Error ? fallo : new Error(String(fallo)))
+const comoError = (fallo: unknown) => {
+  if (fallo instanceof Error) return fallo
+  return new Error(String(fallo))
+}
 
 export const intentar = <Valor>(promesa: Promise<Valor>): Promise<Resultado<Valor>> =>
   promesa.then(

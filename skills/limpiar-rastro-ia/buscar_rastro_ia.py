@@ -44,6 +44,16 @@ PATRONES_COMENTARIO = {
         r"^\W*(main logic|helper functions?|imports?|constants?|variables|"
         r"lógica principal|funciones auxiliares|constantes)\W*$", re.IGNORECASE
     ),
+    "explica el cambio": re.compile(
+        r"^\W*((added|updated|changed|fixed|removed|modified|refactored)\b.*\b(to|per|for|because)\b|"
+        r"ahora (usamos|se usa|se hace)|se ha (añadido|cambiado|actualizado|quitado)|"
+        r"(añadid|cambiad|actualizad|modificad)[oa]s? (para|según|por))", re.IGNORECASE
+    ),
+    "repite el código": re.compile(
+        r"^\W*(función (para|que)|function (to|that)|incrementa|increments? the|"
+        r"importa(mos)? (las )?librerías|imports? (the )?(libraries|modules)|"
+        r"devuelve el resultado|returns? the result)\b", re.IGNORECASE
+    ),
     "aviso de relleno": re.compile(r"^\W*(note|important|nota|importante)\s*:", re.IGNORECASE),
     "todo sin tarea": re.compile(r"^\W*(todo|fixme|xxx)\W*$", re.IGNORECASE),
     "marcador de cierre": re.compile(r"^\W*end (if|for|while|def|function|class)\b", re.IGNORECASE),
@@ -56,12 +66,17 @@ def texto_del_comentario(linea: str) -> str:
     return sin_marca.strip().rstrip("*/").rstrip("-->").strip()
 
 
+def avisos_de_texto_suelto(linea: str) -> list[str]:
+    if EMOJI.search(linea):
+        return ["emoji en texto (¿lo ve el usuario?)"]
+    return []
+
+
 def avisos_de_linea(linea: str) -> list[str]:
-    tiene_emoji = bool(EMOJI.search(linea))
     if not INICIO_COMENTARIO.match(linea):
-        return ["emoji en texto (¿lo ve el usuario?)"] if tiene_emoji else []
+        return avisos_de_texto_suelto(linea)
     comentario = texto_del_comentario(linea)
-    return ["emoji en comentario"] * tiene_emoji + [nombre for nombre, patron in PATRONES_COMENTARIO.items() if patron.search(comentario)]
+    return ["emoji en comentario"] * bool(EMOJI.search(linea)) + [nombre for nombre, patron in PATRONES_COMENTARIO.items() if patron.search(comentario)]
 
 
 def archivos_a_revisar(raiz: Path, extensiones: set[str]) -> list[Path]:
@@ -73,22 +88,42 @@ def archivos_a_revisar(raiz: Path, extensiones: set[str]) -> list[Path]:
     ]
 
 
+def nombre_para_mostrar(ruta: Path, raiz: Path) -> str:
+    if ruta.is_relative_to(raiz):
+        return ruta.relative_to(raiz).as_posix()
+    return ruta.as_posix()
+
+
 def avisos_de_archivo(ruta: Path, raiz: Path) -> list[str]:
     lineas = ruta.read_text(encoding="utf-8", errors="ignore").splitlines()
-    relativa = ruta.relative_to(raiz).as_posix()
+    nombre = nombre_para_mostrar(ruta, raiz)
     return [
-        f"{relativa}:{numero}: [{', '.join(avisos)}] {linea.strip()[:100]}"
+        f"{nombre}:{numero}: [{', '.join(avisos)}] {linea.strip()[:100]}"
         for numero, linea in enumerate(lineas, start=1)
         if (avisos := avisos_de_linea(linea))
     ]
 
 
+def extensiones_pedidas(argumentos: list[str]) -> set[str]:
+    if "--docs" in argumentos:
+        return EXTENSIONES_CODIGO | EXTENSIONES_DOCS
+    return EXTENSIONES_CODIGO
+
+
+# Acepta carpetas (las recorre enteras) o archivos sueltos: el hook de cierre pasa los cambiados.
+def archivos_pedidos(argumentos: list[str], extensiones: set[str]) -> list[Path]:
+    rutas = [Path(argumento).resolve() for argumento in argumentos if not argumento.startswith("--")]
+    carpetas = [ruta for ruta in rutas or [Path.cwd()] if ruta.is_dir()]
+    sueltos = [ruta for ruta in rutas if ruta.is_file()]
+    return [archivo for carpeta in carpetas for archivo in archivos_a_revisar(carpeta, extensiones)] + sueltos
+
+
 def main() -> None:
     # La consola de Windows usa cp1252 y rompe al imprimir los emojis encontrados.
     sys.stdout.reconfigure(encoding="utf-8")
-    raiz = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
-    extensiones = EXTENSIONES_CODIGO | (EXTENSIONES_DOCS if "--docs" in sys.argv else set())
-    avisos = [aviso for ruta in archivos_a_revisar(raiz, extensiones) for aviso in avisos_de_archivo(ruta, raiz)]
+    raiz = Path.cwd()
+    extensiones = extensiones_pedidas(sys.argv[1:])
+    avisos = [aviso for ruta in archivos_pedidos(sys.argv[1:], extensiones) for aviso in avisos_de_archivo(ruta, raiz)]
     print("\n".join(avisos) or "Sin rastros de IA detectables por patrón.")
     print(f"\n{len(avisos)} avisos. Revisa cada uno: el script no distingue un porqué útil de relleno.")
 

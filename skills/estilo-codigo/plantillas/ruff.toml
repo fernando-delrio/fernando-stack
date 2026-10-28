@@ -1,6 +1,8 @@
 # Norma de estilo de Fernando (fernando-stack) para Python. Plantilla: copiar en la raíz del proyecto.
-# Lo que Ruff no sabe comprobar (ningún else ni match, except solo en backend/intentar.py,
-# funciones de 20 líneas como máximo) lo vigila tests/test_norma_estilo.py (plantilla en esta misma carpeta).
+# Lo que Ruff no sabe comprobar (ningún else, ternario ni match, except solo en backend/intentar.py,
+# 20 líneas por función y un nivel de bloques) lo vigila tests/test_norma_estilo.py (plantilla en
+# esta misma carpeta).
+# Excepciones de Ruff con su código y su porqué: `# noqa: N802 -- <porqué>`.
 line-length = 100
 target-version = "py313"
 
@@ -12,7 +14,7 @@ select = [
   "RET",     # return y else innecesarios
   "SIM",     # condiciones que se pueden simplificar
   "C901",    # complejidad
-  "N",       # nombres en el formato de Python
+  "N",       # snake_case en funciones y variables, PascalCase en clases, UPPER_CASE en constantes
   "PLR0913", # (9) más de 3 parámetros piden un objeto
 ]
 # Ruff format parte las líneas largas; los textos y el SQL largos se dejan enteros.

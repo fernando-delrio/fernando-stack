@@ -1,0 +1,16 @@
+{
+  "description": "fernando-stack: al terminar un turno con cambios de código, revisa los archivos cambiados con la norma de estilo (formateador y linter del proyecto o comprobador ligero) y devuelve lo que falle. DESACTIVADO: para activarlo, renombra este archivo a hooks.json, sube la versión del plugin y actualízalo.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/comprobar-cierre.mjs\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
