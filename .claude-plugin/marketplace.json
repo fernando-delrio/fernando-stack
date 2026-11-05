@@ -1,13 +1,13 @@
 {
-  "name": "fernando-stack",
-  "description": "Marketplace personal de Fernando del Río con su forma de escribir y refactorizar código.",
+  "name": "readfirst",
+  "description": "Marketplace for the readfirst plugin: code style rules, refactoring and review for Claude Code.",
   "owner": {
     "name": "Fernando del Río"
   },
   "plugins": [
     {
-      "name": "fernando-stack",
-      "description": "Norma de estilo, guía de refactorización, estructura de carpetas y agentes revisores de Fernando.",
+      "name": "readfirst",
+      "description": "Style rules, refactoring guide, project structure and reviewer agents, built around one idea: code is read by people first.",
       "source": "./",
       "category": "development"
     }

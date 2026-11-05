@@ -1,0 +1,31 @@
+# readfirst style rules for Python. Template: copy it to the project root.
+# What Ruff cannot check (no else, ternary or match, except only in backend/attempt.py,
+# 20 lines per function and one level of blocks) is watched by tests/test_style_rules.py
+# (template in this same folder).
+# Ruff exceptions with their code and reason: `# noqa: N802 -- <reason>`.
+line-length = 100
+target-version = "py313"
+
+[lint]
+select = [
+  "F",       # errors and unused names
+  "E", "W",  # basic style
+  "B",       # typical Python mistakes
+  "RET",     # unnecessary return and else
+  "SIM",     # conditions that can be simplified
+  "C901",    # complexity
+  "N",       # snake_case for functions and variables, PascalCase for classes, UPPER_CASE for constants
+  "PLR0913", # more than 3 parameters call for an object
+]
+# Ruff format splits long lines; long texts and SQL are left whole.
+ignore = ["E501"]
+
+[lint.mccabe]
+max-complexity = 6
+
+[lint.pylint]
+max-args = 3
+
+[lint.flake8-bugbear]
+# This is how FastAPI declares route parameters; they are not dangerous calls.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Body"]

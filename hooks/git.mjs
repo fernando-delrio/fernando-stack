@@ -1,37 +1,36 @@
 import { existsSync } from 'node:fs'
 import { extname, resolve } from 'node:path'
-import { ejecutar } from './ejecutar.mjs'
+import { run } from './run.mjs'
 
-export const EXTENSIONES_TS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs'])
-export const EXTENSIONES_PY = new Set(['.py'])
+export const TS_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs'])
+export const PY_EXTENSIONS = new Set(['.py'])
 
-// null significa «el archivo entero»: es nuevo, o el repo aún no tiene commits.
-export const TODAS_LAS_LINEAS = null
+// null means "the whole file": it is new, or the repo has no commits yet.
+export const ALL_LINES = null
 
 const HUNK = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm
 
-export const raizDelRepo = (carpeta) =>
-  ejecutar('git', ['rev-parse', '--show-toplevel'], carpeta).valor?.trim()
+export const repoRoot = (folder) => run('git', ['rev-parse', '--show-toplevel'], folder).value?.trim()
 
-// «R viejo -> nuevo» en los renombrados; las rutas con espacios llegan entre comillas.
-const rutaDeLaLinea = (linea) => linea.slice(3).split(' -> ').at(-1).replace(/^"|"$/g, '')
+// "R old -> new" for renames; paths with spaces arrive quoted.
+const pathOfLine = (line) => line.slice(3).split(' -> ').at(-1).replace(/^"|"$/g, '')
 
-const isCodigo = (ruta) => EXTENSIONES_TS.has(extname(ruta)) || EXTENSIONES_PY.has(extname(ruta))
+const isCode = (path) => TS_EXTENSIONS.has(extname(path)) || PY_EXTENSIONS.has(extname(path))
 
-const isBorrado = (linea) => linea.startsWith(' D') || linea.startsWith('D')
+const isDeleted = (line) => line.startsWith(' D') || line.startsWith('D')
 
-export const archivosCambiados = (raiz) =>
-  (ejecutar('git', ['status', '--porcelain', '-uall'], raiz).valor ?? '')
+export const changedFiles = (root) =>
+  (run('git', ['status', '--porcelain', '-uall'], root).value ?? '')
     .split(/\r?\n/)
-    .filter((linea) => linea.trim() && !isBorrado(linea))
-    .map((linea) => resolve(raiz, rutaDeLaLinea(linea)))
-    .filter((ruta) => isCodigo(ruta) && existsSync(ruta))
+    .filter((line) => line.trim() && !isDeleted(line))
+    .map((line) => resolve(root, pathOfLine(line)))
+    .filter((path) => isCode(path) && existsSync(path))
 
-const rangoDelHunk = ([, inicio, cuenta = '1']) => [Number(inicio), Number(inicio) + Number(cuenta) - 1]
+const rangeOfHunk = ([, start, count = '1']) => [Number(start), Number(start) + Number(count) - 1]
 
-// Las líneas añadidas o cambiadas respecto a HEAD, como rangos [desde, hasta].
-export const lineasCambiadas = (raiz, ruta) => {
-  const { valor, error } = ejecutar('git', ['diff', '-U0', '--no-color', 'HEAD', '--', ruta], raiz)
-  if (error || !valor.trim()) return TODAS_LAS_LINEAS
-  return [...valor.matchAll(HUNK)].map(rangoDelHunk).filter(([desde, hasta]) => hasta >= desde)
+// The lines added or changed relative to HEAD, as [from, to] ranges.
+export const changedLines = (root, path) => {
+  const { value, error } = run('git', ['diff', '-U0', '--no-color', 'HEAD', '--', path], root)
+  if (error || !value.trim()) return ALL_LINES
+  return [...value.matchAll(HUNK)].map(rangeOfHunk).filter(([from, to]) => to >= from)
 }

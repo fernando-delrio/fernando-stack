@@ -1,10 +1,11 @@
 {
-  "name": "fernando-stack",
-  "version": "0.4.0",
-  "description": "La forma de escribir y refactorizar código de Fernando para todos sus proyectos: norma de estilo con ejemplos, guía de refactorización, limpieza de rastros de IA, estructura de carpetas, inicio de proyectos, agentes revisores y un hook de cierre (desactivado por defecto).",
+  "name": "readfirst",
+  "version": "1.0.0",
+  "description": "Code that a person can read first: style rules with examples, a refactoring guide, AI-trace cleanup, project structure, project setup, reviewer agents and a stop hook (disabled by default).",
   "author": {
     "name": "Fernando del Río"
   },
-  "repository": "https://github.com/fernando-delrio/fernando-stack",
-  "keywords": ["estilo", "refactorizacion", "revision", "react", "typescript", "python"]
+  "license": "MIT",
+  "repository": "https://github.com/fernando-delrio/readfirst-code-style",
+  "keywords": ["style", "refactoring", "code-review", "readability", "react", "typescript", "python"]
 }
