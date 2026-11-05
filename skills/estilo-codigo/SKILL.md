@@ -24,7 +24,7 @@ La excepción también se explica en la respuesta, y el agente `conventions-revi
 
 ## Las 20 reglas
 
-1. **`const` siempre.** Nada de `var`; `let` solo en dos casos: el contador de un bucle con índice cuando no hay forma declarativa, y la bandera de cancelación dentro de un `useEffect`.
+1. **`const` siempre.** Nada de `var`; `let` solo en dos casos: el contador de un bucle con índice cuando no hay forma declarativa, y la bandera de cancelación dentro de un `useEffect`. **Y lo de dentro tampoco se cambia:** `const` impide reasignar, pero no protege el contenido de una lista o un objeto. Para modificarlos se crea uno nuevo (`[...lista, nuevo]`, `{ ...objeto, campo: valor }`); nunca `push`, `splice` ni asignar a un campo. La excepción es `ref.current`, que existe para eso. El spread copia un solo nivel; para algo anidado, `structuredClone`.
 2. **Arrow functions con nombre**, nunca `function`: `const enviarFormulario = async (event) => { … }`.
 3. **El nombre explica lo que hace.** Verbo + objeto en las funciones (`cargarPedidos`, `calcularTotalFactura`); los booleanos, como en «Booleanos» más abajo. Nunca `T`, `x`, `fn`, `data`, `res` ni abreviaturas (`usr`, `tmp2`, `data1`), tampoco en los genéricos de TypeScript (`<Respuesta>`, no `<T>`). La prueba: ¿se entiende dentro de dos meses sin leer el cuerpo? El formato de cada nombre está en «Cómo se escribe cada nombre», más abajo.
 4. **Sin `else` ni ternarios.** Se sale pronto con cláusulas de guarda (`if (…) return`) o se extrae una función con nombre. Un ternario (`c ? a : b`, `a if c else b`) es un `else` escondido: se cambia por una función con guardas o por una tabla.
@@ -32,7 +32,7 @@ La excepción también se explica en la respuesta, y el agente `conventions-revi
 6. **En JSX, guardas con nombre encadenadas con `||`**, sin `if` ni ternarios. `condicion && <Algo />` sigue valiendo.
 7. **Cada capa hace una cosa:** el componente pinta, el hook orquesta, el servicio habla con la API y la librería transforma datos.
 8. **Organización por funcionalidad** (`modules/<feature>/components|hooks|services|lib`); lo compartido va en `core/`. El detalle está en la skill `estructura-proyecto`.
-9. **Los datos de la API se sanean en la frontera**, con valores por defecto, antes de llegar a la vista.
+9. **Los datos de la API se sanean en la frontera**, con valores por defecto, antes de llegar a la vista. El valor por defecto se pone con `??`, que solo salta si falta el dato (`null` o `undefined`). `||` salta también con `0`, `''` y `false`: se usa solo cuando esos valores tampoco sirven (un nombre vacío), nunca en números ni booleanos, porque una distancia de 0 o un `false` se perderían.
 10. **Declarativo antes que imperativo.** En TypeScript, `map`/`filter`/`reduce` en lugar de `for`/`while`. En Python, comprensiones, `sum`, `any`, `all`, `filter` o `map` cuando el resultado es un valor (una lista, un total, un sí o un no). Un `for` se admite cuando el cuerpo es una acción con efectos (enviar, escribir, borrar) y no se construye ningún valor: una comprensión no se usa para hacer cosas. En los dos lenguajes, el bucle se queda solo si es lo más claro.
 11. **Comentarios solo del porqué**, en castellano: una regla de negocio, una restricción externa, un fallo conocido de una librería o una decisión no obvia. Nunca repetir lo que hace la línea, explicar el cambio («Added this to fix…», «Ahora usamos…»), emojis, separadores ni resúmenes de archivo. Si apetece comentar qué hace algo, se cambia el nombre o se extrae una función. Docstrings solo en funciones públicas o de API, y sin repetir la firma.
 12. **Se prueba el hook, no el componente**, con la estructura Preparar-Actuar-Comprobar. Los errores corregidos se apuntan en un registro de errores aprendidos.
@@ -227,7 +227,16 @@ export const modeloDelPanel = (crudo: RespuestaPanel) => ({
 })
 ```
 
-La vista nunca recibe un `null` inesperado. Cada campo tiene su valor por defecto en un solo sitio.
+La vista nunca recibe un `null` inesperado. Cada campo tiene su valor por defecto en un solo sitio. `id` usa `??` porque solo hace falta inventarlo si no viene; `cliente` usa `||` porque un nombre vacío tampoco sirve.
+
+### Sin mutar
+
+```ts
+const anadirPunto = (puntos: Punto[], punto: Punto) => [...puntos, punto]
+
+// La función que recibe setPuntos solo calcula la lista nueva: ni pinta, ni pide, ni mueve nada.
+setPuntos((anteriores) => anadirPunto(anteriores, punto))
+```
 
 ### Comentarios
 
@@ -279,6 +288,7 @@ Vistos en proyectos anteriores de Fernando; si aparecen, se corrigen:
 - **Nombres genéricos** (`res`, `data`, `e`, `err`): `response`, `perfil`, `event`, `error`.
 - **`export default` y exportaciones con nombre mezclados:** siempre `export const`.
 - **Hooks con lógica sin prueba:** una prueba por hook con lógica.
+- **Efectos dentro de `setX((anterior) => …)`** (pintar en un mapa, pedir a la API, mover la cámara): esa función solo calcula el valor nuevo, porque React puede ejecutarla dos veces y entonces se repiten las peticiones y los dibujos. Los efectos van en un `useEffect` que vigile ese estado.
 
 ## Al refactorizar: el comportamiento no cambia
 

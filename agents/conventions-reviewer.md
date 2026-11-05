@@ -31,7 +31,7 @@ Si cumplir una regla hace el código claramente menos legible, se admite una exc
 1. **La vista SOLO pinta.** Nada de llamadas HTTP ni lógica de negocio en el componente o la plantilla.
 2. **Capas separadas:** vista → orquestación (estado y efectos) → servicio de datos (API) → modelo. Cada capa habla solo con la de debajo.
 3. **Errores en un único sitio por capa (regla 17).** El servicio **lanza**; quien orquesta lo recoge con **`intentar()`** y lo convierte en estado de UI con una guarda (`if (error) return …`). Ningún otro archivo tiene `try/catch`, `.catch()` ni `except`.
-4. **Datos de la API saneados en la frontera** (modelo/`lib`), con valores por defecto, antes de llegar a la vista.
+4. **Datos de la API saneados en la frontera** (modelo/`lib`), con valores por defecto, antes de llegar a la vista. El defecto va con `??`; `||` solo si `0`, `''` o `false` tampoco sirven (nunca en números ni booleanos).
 5. **Un componente o servicio, una responsabilidad.** Si necesita un comentario para explicar qué hace, tiene dos.
 6. **Estado derivado se calcula, no se duplica** en estado.
 7. **Features aisladas:** un módulo de funcionalidad no importa de otro; lo compartido sube a `core/`.
@@ -42,6 +42,8 @@ Si cumplir una regla hace el código claramente menos legible, se admite una exc
 - **Pocos `if`:** una cadena de `if` sobre un mismo valor pide una tabla (Strategy).
 - **Un solo nivel de bloques** (`if`, `for`, `while`, `try`, `with`) dentro de una función.
 - **`const` siempre;** `let` solo como contador de un bucle sin alternativa declarativa o como bandera de cancelación de un `useEffect`.
+- **Sin mutar:** listas y objetos se cambian creando uno nuevo (`[...lista, nuevo]`, `{ ...objeto, campo }`), nunca con `push`, `splice` ni asignando a un campo. `ref.current` es la excepción.
+- **La función de `setX((anterior) => …)` solo calcula el valor nuevo:** sin peticiones, dibujos ni otros efectos dentro (React puede llamarla dos veces); los efectos van en un `useEffect`.
 - **Arrow functions con nombre**, nunca `function` (en Python, `def`).
 - **Siempre `export const`,** nunca `export default` (salvo los archivos de configuración que lo exigen).
 - **Nombres que revelan la intención:** verbo + objeto en las funciones, `is`/`has` en los booleanos. Nada de `data`, `res`, `fn`, `e`, `x`, `usr`, `tmp2`; los genéricos de TypeScript, descriptivos (`<Respuesta>`, nunca `<T>`).
